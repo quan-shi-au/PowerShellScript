@@ -3,7 +3,17 @@
 # * Make sure you run this script from an Admin Prompt!
 # * Make sure Powershell Execution Policy is bypassed to run these scripts:
 # * YOU MAY HAVE TO RUN THIS COMMAND PRIOR TO RUNNING THIS SCRIPT!
-# Set-ExecutionPolicy Bypass -Scope Process
+
+
+#############################################
+# set execution policy
+#############################################
+Set-ExecutionPolicy Bypass -Scope Process
+
+
+#############################################
+# Install IIS
+#############################################
 
 Enable-WindowsOptionalFeature -Online -FeatureName IIS-WebServerRole
 Enable-WindowsOptionalFeature -Online -FeatureName IIS-WebServer
