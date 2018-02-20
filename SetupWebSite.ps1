@@ -47,7 +47,7 @@ Write-Host "create app pool" $appPoolName
 
 New-WebAppPool -name $appPoolName  -force
 
-Set-ItemProperty -Path IIS:\AppPools\NewWebSiteAppPool -Name managedRuntimeVersion -Value 'v4.0'
+Set-ItemProperty -Path $appPoolFullName -Name managedRuntimeVersion -Value 'v4.0'
 
 
 #############################################
