@@ -34,12 +34,15 @@ try
 
     if(Test-Path $webSitePath)
     {
-        Remove-Item $webSitePath -Recurse -Force  -Verbose
+        Remove-Item $webSitePath -Recurse -Force
     }
 
     New-Item -ItemType Directory -Force -Path $webSitePath
 
     Copy-Item -Path .\dist\* -Destination $webSitePath -recurse -Force
+
+    Copy-Item -Path D:\Backup\WempWebConfig\2018_01_17\web.config -Destination $webSitePath -recurse -Force
+    
 
     #############################################
     # remove web site if already exists
