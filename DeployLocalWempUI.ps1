@@ -148,4 +148,4 @@ catch
 #############################################
 # Finished
 #############################################
-Read-Host -Prompt "Press any key to exit"
+# Read-Host -Prompt "Press any key to exit"

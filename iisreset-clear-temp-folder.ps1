@@ -10,7 +10,7 @@ if ($myWindowsPrincipal.IsInRole($adminRole))
    {
    # We are running "as Administrator" - so change the title and background color to indicate this
    $Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition + "(Elevated)"
-   $Host.UI.RawUI.BackgroundColor = "DarkBlue"
+#   $Host.UI.RawUI.BackgroundColor = "DarkBlue"
    clear-host
    }
 else
