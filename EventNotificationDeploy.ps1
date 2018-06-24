@@ -27,7 +27,15 @@ if ($task)
 # register scheduled task
 
 $action = New-ScheduledTaskAction -Execute $TargetPath\'ConsoleApplication1.exe' -WorkingDirectory $TargetPath
-$trigger =  New-ScheduledTaskTrigger -Daily -At 9am
-Register-ScheduledTask -Action $action -Trigger $trigger -TaskName $TaskName -Description $TaskName
+$trigger =  New-ScheduledTaskTrigger -Daily -At 1am
+$settings = New-ScheduledTaskSettingsSet -MultipleInstances Parallel
+Register-ScheduledTask  -Action $action `
+                        -Trigger $trigger `
+                        -TaskName $TaskName `
+                        -Description $TaskName `
+                        -RunLevel Highest `
+                        -User localadmin `
+                        -Password w0nt0k `
+                        -Settings $settings `
 
 
