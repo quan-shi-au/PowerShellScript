@@ -1,6 +1,9 @@
 $TaskName = "ConsoleApplication1"
 $SourcePath = "D:\GitHub\ConsoleApplication1\ConsoleApplication1\bin\Debug"
 $TargetPath = "D:\ScheduledTasks\ConsoleApplication1"
+$LocalUserName = "LocalTaskUser"
+$LocalUserPassword = "qnhMP"
+$AdminGroup = "Administrators"
 
 # copy files from source to target
 if(Test-Path $TargetPath)
@@ -17,14 +20,31 @@ $task = Get-ScheduledTask | Where-Object TaskName -EQ $TaskName
 
 if ($task)
 {
-    $taskName = $task.TaskName
+    Write-Output "Task already registered: $TaskName. Exit."
+    return
+}
 
-    Write-Output "Unregister task: $taskName" 
+# Create local user if needed
+$adsi = [ADSI]"WinNT:COMPUTERNAME"
+$existing = $adsi.Children | Where-Object {$_.SchemaClassName -eq 'user' -and $_.Name -eq $LocalUserName}
 
-    Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
+if ($existing -eq $null) {
+    Write-Host "Create new local user $LocalUserName $LocalUserPassword."
+
+    & NET USER /ADD $LocalUserName $LocalUserPassword /expires:never
+
+    Set-LocalUser -Name $LocalUserName -PasswordNeverExpires $true
+
+    & NET LOCALGROUP $AdminGroup $LocalUserName /add
+
+} else {
+
+    Write-Host "User already exists $LocalUserName."
 }
 
 # register scheduled task
+
+Write-Output "Start to register task: $TaskName ..." 
 
 $action = New-ScheduledTaskAction -Execute $TargetPath\'ConsoleApplication1.exe' -WorkingDirectory $TargetPath
 $trigger =  New-ScheduledTaskTrigger -Daily -At 1am
@@ -34,8 +54,8 @@ Register-ScheduledTask  -Action $action `
                         -TaskName $TaskName `
                         -Description $TaskName `
                         -RunLevel Highest `
-                        -User localadmin `
-                        -Password w0nt0k `
+                        -User $LocalUserName `
+                        -Password $LocalUserPassword `
                         -Settings $settings `
 
 
