@@ -1,9 +1,19 @@
-$TaskName = "ConsoleApplication1"
-$SourcePath = "D:\GitHub\ConsoleApplication1\ConsoleApplication1\bin\Debug"
-$TargetPath = "D:\ScheduledTasks\ConsoleApplication1"
+$TaskName = "EventNotification"
+$SourcePath = "c:\Wontok.Tools"
+$TargetPath = "c:\ScheduledTasks\EventNotification"
 $LocalUserName = "LocalTaskUser"
 $LocalUserPassword = "qnhMP@1Abc"
 $AdminGroup = "Administrators"
+
+
+# unregister task if exists already
+$task = Get-ScheduledTask | Where-Object TaskName -EQ $TaskName
+
+if ($task)
+{
+    Write-Output "Task already registered: $TaskName. Exit."
+    return
+}
 
 # copy files from source to target
 if(Test-Path $TargetPath)
@@ -15,14 +25,6 @@ New-Item -ItemType Directory -Force -Path $TargetPath
 
 Copy-Item -Path $SourcePath\* -Destination $TargetPath -recurse -Force
 
-# unregister task if exists already
-$task = Get-ScheduledTask | Where-Object TaskName -EQ $TaskName
-
-if ($task)
-{
-    Write-Output "Task already registered: $TaskName. Exit."
-    return
-}
 
 # Create local user if needed
 $adsi = [ADSI]"WinNT:COMPUTERNAME"
@@ -33,7 +35,7 @@ if ($existing -eq $null) {
 
     & NET USER /ADD $LocalUserName $LocalUserPassword /expires:never
 
-    Set-LocalUser -Name $LocalUserName -PasswordNeverExpires $true
+    WMIC USERACCOUNT WHERE "Name=""$LocalUserName""" SET PasswordExpires=FALSE
 
     & NET LOCALGROUP $AdminGroup $LocalUserName /add
 
@@ -46,7 +48,7 @@ if ($existing -eq $null) {
 
 Write-Output "Start to register task: $TaskName ..." 
 
-$action = New-ScheduledTaskAction -Execute $TargetPath\'ConsoleApplication1.exe' -WorkingDirectory $TargetPath
+$action = New-ScheduledTaskAction -Execute $TargetPath\'Wontok.Tools.exe' -WorkingDirectory $TargetPath
 $trigger =  New-ScheduledTaskTrigger -Daily -At 1am
 $settings = New-ScheduledTaskSettingsSet -MultipleInstances Parallel
 Register-ScheduledTask  -Action $action `
